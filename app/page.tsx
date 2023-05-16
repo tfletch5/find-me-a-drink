@@ -50,7 +50,7 @@ export default function Home() {
 
     return (
         <div className={classes.root}>
-            <Body />
+            {/* <Body /> */}
             <Container maxWidth="xs">
                 <Typography variant="h4" align="center" gutterBottom>
                     Find Me a Drink!

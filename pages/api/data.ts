@@ -5,20 +5,14 @@ export const config = {
     runtime: 'edge',
 };
 
-export default async function handler(req_: NextRequest) {
-    const zip = 30310;
+export default async function handler(req: NextRequest) {
+    const zipCode = await (req as any).url.split('=').slice(-1)[0];
     try {
         const res = await fetch(
-            `http://api.weatherapi.com/v1/current.json?q=${zip}&key=${
+            `http://api.weatherapi.com/v1/current.json?q=${zipCode}&key=${
                 process.env.WEATHER_API_KEY as string
             }`,
-            {
-                method: 'GET',
-                headers: {
-                    'content-type': 'application/json',
-                    'x-api-key': process.env.WEATHER_API_KEY as string,
-                },
-            }
+            { method: 'GET' }
         )
             .then((res) => {
                 if (res.ok) {

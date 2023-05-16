@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { Container, TextField, Typography, Button } from '@material-ui/core';
-import Body from './Body';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -38,19 +37,31 @@ const useStyles = makeStyles((theme) => ({
 export default function Home() {
     const classes = useStyles();
     const [zipCode, setZipCode] = useState('');
+    const [weatherData, setWeatherData] = useState();
 
-    const handleDrink = () => {
+    const handleClick = (e: any) => {
+        e.preventDefault();
         if (!zipCode) {
             alert('Please enter a zip code!');
             return;
         }
-        alert(`Found you a drink in ${zipCode}!`);
+        fetch(`/api/data?zipCode=${zipCode}`)
+            .then((res) => {
+                if (res.ok) {
+                    return res.json();
+                }
+            })
+            .then((data) => {
+                setWeatherData(data.res.current);
+                return data;
+            })
+            .catch((e) => {
+                console.log(e);
+            });
     };
-    console.log(zipCode);
 
     return (
         <div className={classes.root}>
-            {/* <Body /> */}
             <Container maxWidth="xs">
                 <Typography variant="h4" align="center" gutterBottom>
                     Find Me a Drink!
@@ -59,8 +70,21 @@ export default function Home() {
                     Enter your zip code to find a drink that fits your local
                     time and weather!
                 </Typography>
-                <form className={classes.form}>
+                <form
+                    className={classes.form}
+                    onSubmit={(e) => {
+                        e.preventDefault();
+                        handleClick(e);
+                    }}
+                >
                     <TextField
+                        onKeyDown={(e) => {
+                            if (e.code == '13') {
+                                e.preventDefault();
+                                handleClick(e);
+                                return;
+                            }
+                        }}
                         className={classes.textField}
                         label="Zip Code"
                         variant="filled"
@@ -68,10 +92,14 @@ export default function Home() {
                         fullWidth
                     />
                     <Button
+                        onKeyDown={(e) => {
+                            e.preventDefault();
+                            handleClick(e);
+                        }}
                         fullWidth
                         variant="contained"
                         color="primary"
-                        onClick={handleDrink}
+                        onClick={handleClick}
                     >
                         Find me a Drink!
                     </Button>

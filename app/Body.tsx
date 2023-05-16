@@ -1,22 +1,11 @@
 'use client';
 import { useEffect } from 'react';
 
-export default function Body() {
-    useEffect(() => {
-        fetch('/api/data')
-            .then((res) => {
-                if (res.ok) {
-                    return res.json();
-                }
-            })
-            .then((data) => {
-                console.log('see my data', data);
-                return data;
-            })
-            .catch((e) => {
-                console.log('THIS IS A ERROR');
-            });
-    }, []);
+type BodyProps = { zipCode: string };
 
-    return <div>damn</div>;
+export default function Body(props: BodyProps) {
+    const { zipCode } = props;
+    useEffect(() => {}, []);
+
+    return <></>;
 }

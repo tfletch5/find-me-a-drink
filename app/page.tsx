@@ -1,8 +1,8 @@
-'use client'
-import React, { useState } from 'react'
-import { makeStyles } from '@material-ui/core/styles'
-import { Container, TextField, Typography, Button } from '@material-ui/core'
-import Body from './Body'
+'use client';
+import React, { useState } from 'react';
+import { makeStyles } from '@material-ui/core/styles';
+import { Container, TextField, Typography, Button } from '@material-ui/core';
+import Body from './Body';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -33,20 +33,20 @@ const useStyles = makeStyles((theme) => ({
         left: '50%',
         bottom: theme.spacing(2),
     },
-}))
+}));
 
 export default function Home() {
-    const classes = useStyles()
-    const [zipCode, setZipCode] = useState('')
+    const classes = useStyles();
+    const [zipCode, setZipCode] = useState('');
 
     const handleDrink = () => {
         if (!zipCode) {
-            alert('Please enter a zip code!')
-            return
+            alert('Please enter a zip code!');
+            return;
         }
-        alert(`Found you a drink in ${zipCode}!`)
-    }
-    console.log(zipCode)
+        alert(`Found you a drink in ${zipCode}!`);
+    };
+    console.log(zipCode);
 
     return (
         <div className={classes.root}>
@@ -78,5 +78,5 @@ export default function Home() {
                 </form>
             </Container>
         </div>
-    )
+    );
 }

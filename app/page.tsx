@@ -54,7 +54,7 @@ export default function Home() {
           Find Me a Drink!
         </Typography>
         <Typography variant="h6" align="center" gutterBottom>
-          Enter your zip code and we'll find you a drink that fits your local time and weather!
+          Enter your zip code to find a drink that fits your local time and weather!
         </Typography>
         <form className={classes.form}>
           <TextField

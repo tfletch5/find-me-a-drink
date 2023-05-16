@@ -1,95 +1,74 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+'use client';
+import React, { useState } from "react";
+import { makeStyles } from "@material-ui/core/styles";
+import { Container, TextField, Typography, Button } from "@material-ui/core";
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    display: "flex",
+    justifyContent: "center",
+    alignItems: "center",
+    minHeight: "100vh",
+    backgroundImage: 'url("/row-of-shots.jpeg")',
+    backgroundSize: "cover",
+    backgroundPosition: "center",
+  },
+  form: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    padding: theme.spacing(2),
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+    borderRadius: theme.spacing(1),
+  },
+  textField: {
+    marginBottom: theme.spacing(2),
+    color: "white",
+    backgroundColor: "white",
+    borderRadius: theme.spacing(1),
+  },
+  footer: {
+    position: "absolute",
+    left: '50%',
+    bottom: theme.spacing(2),
+  },
+}));
 
 export default function Home() {
+  const classes = useStyles();
+  const [zipCode, setZipCode] = useState("");
+
+  const handleDrink = () => {
+    if (!zipCode) {
+      alert("Please enter a zip code!");
+      return;
+    }
+    alert(`Found you a drink in ${zipCode}!`);
+  };
+  console.log(zipCode)
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+    <div className={classes.root}>
+      <Container maxWidth="xs">
+        <Typography variant="h4" align="center" gutterBottom>
+          Find Me a Drink!
+        </Typography>
+        <Typography variant="h6" align="center" gutterBottom>
+          Enter your zip code and we'll find you a drink that fits your local time and weather!
+        </Typography>
+        <form className={classes.form}>
+          <TextField
+            className={classes.textField}
+            label="Zip Code"
+            variant="filled"
+            onChange={(e) => setZipCode(e.currentTarget.value)}
+            fullWidth
+          />
+          <Button fullWidth variant="contained" color="primary" onClick={handleDrink}>
+            Find me a Drink!
+          </Button>
+        </form>
+      </Container>
+    </div>
+  );
 }

@@ -6,8 +6,9 @@ export const config = {
 };
 
 export default async function handler(req_: NextRequest) {
+  const zip = 30310;
   try {
-    const res = await fetch('https://api.interzoid.com/getweatherzipcode?zip=30310', {method: 'GET', headers: {'content-type': 'application/json','x-api-key': process.env.WEATHER_API_KEY as string }}).then(res => {
+    const res = await fetch(`http://api.weatherapi.com/v1/current.json?q=${zip}&key=${process.env.WEATHER_API_KEY as string}`, {method: 'GET', headers: {'content-type': 'application/json','x-api-key': process.env.WEATHER_API_KEY as string }}).then(res => {
       if (res.ok) {
         return res.json()
       }

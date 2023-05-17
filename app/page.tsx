@@ -38,6 +38,7 @@ export default function Home() {
     const classes = useStyles();
     const [zipCode, setZipCode] = useState('');
     const [weatherData, setWeatherData] = useState();
+    const [suggestions, setSuggestions] = useState();
 
     const handleClick = (e: any) => {
         e.preventDefault();
@@ -45,7 +46,7 @@ export default function Home() {
             alert('Please enter a zip code!');
             return;
         }
-        fetch(`/api/data?zipCode=${zipCode}`)
+        fetch(`/api/getWeather?zipCode=${zipCode}`)
             .then((res) => {
                 if (res.ok) {
                     return res.json();
@@ -53,7 +54,27 @@ export default function Home() {
             })
             .then((data) => {
                 setWeatherData(data.res.current);
-                return data;
+                return data.res.current;
+            })
+            .then((weatherData) => {
+                const phrase = `List alcholic beverages that would best match the weather if is ${(
+                    weatherData.condition.text as string
+                ).toLowerCase()} and the temperature is ${
+                    weatherData.temp_f
+                } fahrenheit?`;
+                fetch(`/api/chat?phrase=${phrase}`)
+                    .then((res) => {
+                        if (res.ok) {
+                            return res.json();
+                        }
+                    })
+                    .then((data) => {
+                        console.log(
+                            'SEE DATA ',
+                            data.res.choices[0].message.content
+                        );
+						setSuggestions(data.res.choices[0].message.content);
+                    });
             })
             .catch((e) => {
                 console.log(e);

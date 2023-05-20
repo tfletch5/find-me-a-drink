@@ -1,13 +1,12 @@
 'use client';
 import React, { FormEvent, useCallback, useState } from 'react';
-
-import { Container, Typography } from '@material-ui/core';
-import useStyles from '@/hooks/useStyles';
-import GetDrinkForm from '@/components/GetDrinkForm';
-import OurCircularProgress from '@/components/CircularProgress/CircularProgress';
+import {Container, Typography} from '@mui/material';
+import GetDrinkForm from '@/components/GetDrinkForm/GetDrinkForm';
+import CircularProgress from '@/components/CircularProgress/CircularProgress';
+import Alert from '@/components/Alert/Alert';
+import styles from './page.module.css';
 
 export default function Home() {
-    const classes = useStyles();
     const [zipCode, setZipCode] = useState('');
     const [weatherData, setWeatherData] = useState();
     const [suggestions, setSuggestions] = useState<string | null | undefined>();
@@ -46,13 +45,26 @@ export default function Home() {
                         .then((data) => {
                             const regex = /\b\d+\./g;
                             const { content } = data.res.choices[0].message;
-                            console.log(content);
                             let choices: string | string[] = decodeURIComponent(
                                 content
-                            ).replaceAll('\\n', '');
+                            ).replaceAll(/\n/g, '');
                             choices = choices.split(regex);
                             setSuggestions(choices as unknown as string);
-                            console.log(choices);
+                            let choicesWithoutAiDisclaimer: string[] = [];
+                            for (const c of choices) {
+                                console.log('SEE c ', {c, choices})
+                                const includesAi = c.includes('AI')
+                                if (includesAi && c.includes('non-alcoholic'))  {
+                                    break;
+                                }
+                                if (includesAi) {
+                                    continue;
+                                }
+                                console.log(c)
+                                choicesWithoutAiDisclaimer = [...choicesWithoutAiDisclaimer, c]
+
+                            }
+                            
                             setFetchingData(false); //TODO: remove this when you start to make other api calls.
                         });
                 })
@@ -65,7 +77,7 @@ export default function Home() {
     );
 
     return (
-        <div className={classes.root}>
+        <div className={styles.root}>
             <Container maxWidth="xs">
                 <Typography variant="h4" align="center" gutterBottom>
                     Find Me a Drink!
@@ -79,7 +91,8 @@ export default function Home() {
                     setZipCode={setZipCode}
                 />
             </Container>
-            <OurCircularProgress showProgress={fetchingData} />
+            <CircularProgress showProgress={fetchingData} />
+            <Alert />
         </div>
     );
 }

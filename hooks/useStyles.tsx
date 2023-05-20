@@ -1,11 +1,13 @@
-import { makeStyles } from '@material-ui/core/styles';
-const useStyles = makeStyles((theme) => ({
+import { makeStyles } from '@mui/material';
+
+type ThemeProps = {spacing: (n: number) => string}
+const useStyles = makeStyles((theme: ThemeProps): { [x: string]: { [x: string]: string } } => ({
     root: {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
         minHeight: '100vh',
-        backgroundImage: 'url("/row-of-shots.jpeg")',
+        backgroundImage: 'url("")',
         backgroundSize: 'cover',
         backgroundPosition: 'center',
     },

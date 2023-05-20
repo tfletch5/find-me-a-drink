@@ -1,8 +1,8 @@
 'use client';
 import { FormEvent } from 'react';
-import useStyles from '@/hooks/useStyles';
-import { TextField, Button } from '@material-ui/core';
-import CircularProgress from './CircularProgress/CircularProgress';
+import styles from './GetDrinkForm.module.css';
+import { TextField, Button } from '@mui/material';
+
 
 type GetDrinkFormTypes = {
     handleClick: (e: FormEvent<HTMLFormElement> | KeyboardEvent) => void;
@@ -11,11 +11,10 @@ type GetDrinkFormTypes = {
 
 export default function GetDrinkForm(props: GetDrinkFormTypes): JSX.Element {
     const { handleClick, setZipCode } = props;
-    const classes = useStyles();
     return (
         <>
             <form
-                className={classes.form}
+                className={styles.form}
                 onSubmit={(e) => {
                     e.preventDefault();
                     handleClick(e);
@@ -29,7 +28,7 @@ export default function GetDrinkForm(props: GetDrinkFormTypes): JSX.Element {
                             return;
                         }
                     }}
-                    className={classes.textField}
+                    className={styles.textField}
                     label="Zip Code"
                     variant="filled"
                     onChange={(e) => setZipCode(e.currentTarget.value)}

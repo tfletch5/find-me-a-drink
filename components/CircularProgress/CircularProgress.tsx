@@ -1,5 +1,5 @@
 'use client';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 import styles from './CircularProgress.module.css';
 
 type OurCircularProgress = {

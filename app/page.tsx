@@ -46,11 +46,13 @@ export default function Home() {
                         .then((data) => {
                             const regex = /\b\d+\./g;
                             const { content } = data.res.choices[0].message;
-                            let matches: string | string[] = decodeURIComponent(
+                            console.log(content)
+                            let choices: string | string[] = decodeURIComponent(
                                 content
                             ).replaceAll('\\n', '');
-                            matches = matches.split(regex);
-                            setSuggestions(matches as unknown as string);
+                            choices = choices.split(regex);
+                            setSuggestions(choices as unknown as string);
+                            console.log(choices)
                             setFetchingData(false); //TODO: remove this when you start to make other api calls.
                         });
                 })

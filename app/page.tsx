@@ -46,19 +46,19 @@ export default function Home() {
                         .then((data) => {
                             const regex = /\b\d+\./g;
                             const { content } = data.res.choices[0].message;
-                            console.log(content)
+                            console.log(content);
                             let choices: string | string[] = decodeURIComponent(
                                 content
                             ).replaceAll('\\n', '');
                             choices = choices.split(regex);
                             setSuggestions(choices as unknown as string);
-                            console.log(choices)
+                            console.log(choices);
                             setFetchingData(false); //TODO: remove this when you start to make other api calls.
                         });
                 })
                 .catch((e) => {
                     console.log(e);
-                    setFetchingData(false)
+                    setFetchingData(false);
                 });
         },
         [zipCode]
@@ -79,7 +79,7 @@ export default function Home() {
                     setZipCode={setZipCode}
                 />
             </Container>
-            <OurCircularProgress showProgress={fetchingData}/>
+            <OurCircularProgress showProgress={fetchingData} />
         </div>
     );
 }

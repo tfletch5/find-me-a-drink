@@ -16,7 +16,9 @@ export default function OurCircularProgress(
     }
 
     return (
-        <div className={`${overlay ? styles.withOverlay : ''} ${styles.wrapper}`}>
+        <div
+            className={`${overlay ? styles.withOverlay : ''} ${styles.wrapper}`}
+        >
             <div className={styles.innerWrapper}>
                 <CircularProgress className={styles.spinner} />
                 <p>Hang on! We're getting your options...</p>

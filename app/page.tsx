@@ -4,12 +4,14 @@ import React, { FormEvent, useCallback, useState } from 'react';
 import { Container, Typography } from '@material-ui/core';
 import useStyles from '@/hooks/useStyles';
 import GetDrinkForm from '@/components/GetDrinkForm';
+import OurCircularProgress from '@/components/CircularProgress/CircularProgress';
 
 export default function Home() {
     const classes = useStyles();
     const [zipCode, setZipCode] = useState('');
     const [weatherData, setWeatherData] = useState();
     const [suggestions, setSuggestions] = useState<string | null | undefined>();
+    const [fetchingData, setFetchingData] = useState<boolean>(false);
 
     const handleClick = useCallback(
         (e: FormEvent<HTMLFormElement> | KeyboardEvent) => {
@@ -18,6 +20,7 @@ export default function Home() {
                 alert('Please enter a zip code!');
                 return;
             }
+            setFetchingData(true);
             fetch(`/api/getWeather?zipCode=${zipCode}`)
                 .then((res) => {
                     if (res.ok) {
@@ -48,10 +51,12 @@ export default function Home() {
                             ).replaceAll('\\n', '');
                             matches = matches.split(regex);
                             setSuggestions(matches as unknown as string);
+                            setFetchingData(false); //TODO: remove this when you start to make other api calls.
                         });
                 })
                 .catch((e) => {
                     console.log(e);
+                    setFetchingData(false)
                 });
         },
         [zipCode]
@@ -72,6 +77,7 @@ export default function Home() {
                     setZipCode={setZipCode}
                 />
             </Container>
+            <OurCircularProgress showProgress={fetchingData}/>
         </div>
     );
 }

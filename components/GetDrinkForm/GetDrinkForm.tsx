@@ -3,7 +3,6 @@ import { FormEvent } from 'react';
 import styles from './GetDrinkForm.module.css';
 import { TextField, Button } from '@mui/material';
 
-
 type GetDrinkFormTypes = {
     handleClick: (e: FormEvent<HTMLFormElement> | KeyboardEvent) => void;
     setZipCode: React.Dispatch<React.SetStateAction<string>>;

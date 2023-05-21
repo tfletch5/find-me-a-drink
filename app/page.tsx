@@ -1,6 +1,6 @@
 'use client';
 import React, { FormEvent, useCallback, useState } from 'react';
-import {Container, Typography} from '@mui/material';
+import { AlertColor, Container, Typography } from '@mui/material';
 import GetDrinkForm from '@/components/GetDrinkForm/GetDrinkForm';
 import CircularProgress from '@/components/CircularProgress/CircularProgress';
 import Alert from '@/components/Alert/Alert';
@@ -10,13 +10,22 @@ export default function Home() {
     const [zipCode, setZipCode] = useState('');
     const [weatherData, setWeatherData] = useState();
     const [suggestions, setSuggestions] = useState<string | null | undefined>();
-    const [fetchingData, setFetchingData] = useState<boolean>(false);
+    const [fetchingData, setFetchingData] = useState(false);
+    const [alert, setAlert] = useState<{
+        open: boolean;
+        color: string;
+        message: string;
+    }>();
 
     const handleClick = useCallback(
         (e: FormEvent<HTMLFormElement> | KeyboardEvent) => {
             e.preventDefault();
             if (!zipCode) {
-                alert('Please enter a zip code!');
+                setAlert({
+                    color: 'error',
+                    open: true,
+                    message: 'Please, enter a zip code!',
+                });
                 return;
             }
             setFetchingData(true);
@@ -52,19 +61,25 @@ export default function Home() {
                             setSuggestions(choices as unknown as string);
                             let choicesWithoutAiDisclaimer: string[] = [];
                             for (const c of choices) {
-                                console.log('SEE c ', {c, choices})
-                                const includesAi = c.includes('AI')
-                                if (includesAi && c.includes('non-alcoholic'))  {
+                                console.log('SEE c ', { c, choices });
+                                const includesAi = c.includes('AI');
+                                if (
+                                    (includesAi &&
+                                        c.includes('non-alcoholic')) ||
+                                    c.includes('cannot provide')
+                                ) {
                                     break;
                                 }
                                 if (includesAi) {
                                     continue;
                                 }
-                                console.log(c)
-                                choicesWithoutAiDisclaimer = [...choicesWithoutAiDisclaimer, c]
-
+                                console.log(c);
+                                choicesWithoutAiDisclaimer = [
+                                    ...choicesWithoutAiDisclaimer,
+                                    c,
+                                ];
                             }
-                            
+
                             setFetchingData(false); //TODO: remove this when you start to make other api calls.
                         });
                 })
@@ -92,7 +107,12 @@ export default function Home() {
                 />
             </Container>
             <CircularProgress showProgress={fetchingData} />
-            <Alert />
+            <Alert
+                message={alert?.message as string}
+                color={alert?.color as AlertColor}
+                open={alert?.open}
+                handleClose={setAlert}
+            />
         </div>
     );
 }

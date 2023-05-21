@@ -1,0 +1,29 @@
+.withOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); /* Adjust the opacity as needed */
+    z-index: 9999; /* Adjust the z-index as needed */
+}
+
+.wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.spinner {
+    height: 60px !important;
+    width: 60px !important;
+    color: yellow !important;
+}
+
+.innerWrapper {
+    gap: 25px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}

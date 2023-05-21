@@ -1,88 +1,98 @@
 'use client';
-import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { Container, TextField, Typography, Button } from '@material-ui/core';
-
-const useStyles = makeStyles((theme) => ({
-    root: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '100vh',
-        backgroundImage: 'url("/row-of-shots.jpeg")',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-    },
-    form: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        padding: theme.spacing(2),
-        backgroundColor: 'rgba(0, 0, 0, 0.6)',
-        borderRadius: theme.spacing(1),
-    },
-    textField: {
-        marginBottom: theme.spacing(2),
-        color: 'white',
-        backgroundColor: 'white',
-        borderRadius: theme.spacing(1),
-    },
-    footer: {
-        position: 'absolute',
-        left: '50%',
-        bottom: theme.spacing(2),
-    },
-}));
+import React, { FormEvent, useCallback, useState } from 'react';
+import { AlertColor, Container, Typography } from '@mui/material';
+import GetDrinkForm from '@/components/GetDrinkForm/GetDrinkForm';
+import CircularProgress from '@/components/CircularProgress/CircularProgress';
+import Alert from '@/components/Alert/Alert';
+import styles from './page.module.css';
 
 export default function Home() {
-    const classes = useStyles();
     const [zipCode, setZipCode] = useState('');
     const [weatherData, setWeatherData] = useState();
-    const [suggestions, setSuggestions] = useState();
+    const [suggestions, setSuggestions] = useState<string | null | undefined>();
+    const [fetchingData, setFetchingData] = useState(false);
+    const [alert, setAlert] = useState<{
+        open: boolean;
+        color: string;
+        message: string;
+    }>();
 
-    const handleClick = (e: any) => {
-        e.preventDefault();
-        if (!zipCode) {
-            alert('Please enter a zip code!');
-            return;
-        }
-        fetch(`/api/getWeather?zipCode=${zipCode}`)
-            .then((res) => {
-                if (res.ok) {
-                    return res.json();
-                }
-            })
-            .then((data) => {
-                setWeatherData(data.res.current);
-                return data.res.current;
-            })
-            .then((weatherData) => {
-                const phrase = `List alcholic beverages that would best match the weather if is ${(
-                    weatherData.condition.text as string
-                ).toLowerCase()} and the temperature is ${
-                    weatherData.temp_f
-                } fahrenheit?`;
-                fetch(`/api/chat?phrase=${phrase}`)
-                    .then((res) => {
-                        if (res.ok) {
-                            return res.json();
-                        }
-                    })
-                    .then((data) => {
-                        console.log(
-                            'SEE DATA ',
-                            data.res.choices[0].message.content
-                        );
-						setSuggestions(data.res.choices[0].message.content);
-                    });
-            })
-            .catch((e) => {
-                console.log(e);
-            });
-    };
+    const handleClick = useCallback(
+        (e: FormEvent<HTMLFormElement> | KeyboardEvent) => {
+            e.preventDefault();
+            if (!zipCode) {
+                setAlert({
+                    color: 'error',
+                    open: true,
+                    message: 'Please, enter a zip code!',
+                });
+                return;
+            }
+            setFetchingData(true);
+            fetch(`/api/getWeather?zipCode=${zipCode}`)
+                .then((res) => {
+                    if (res.ok) {
+                        return res.json();
+                    }
+                })
+                .then((data) => {
+                    setWeatherData(data.res.current);
+                    return data.res.current;
+                })
+                .then((weatherData) => {
+                    const phrase = `List alcholic beverages that would best match the weather if is ${(
+                        weatherData.condition.text as string
+                    ).toLowerCase()} and the temperature is ${
+                        weatherData.temp_f
+                    } fahrenheit? Give me the suggestions in an ordered list.`;
+                    fetch(`/api/chat?phrase=${phrase}`)
+                        .then((res) => {
+                            if (res.ok) {
+                                return res.json();
+                            }
+                        })
+                        .then((data) => {
+                            const regex = /\b\d+\./g;
+                            const { content } = data.res.choices[0].message;
+                            let choices: string | string[] = decodeURIComponent(
+                                content
+                            ).replaceAll(/\n/g, '');
+                            choices = choices.split(regex);
+                            setSuggestions(choices as unknown as string);
+                            let choicesWithoutAiDisclaimer: string[] = [];
+                            for (const c of choices) {
+                                console.log('SEE c ', { c, choices });
+                                const includesAi = c.includes('AI');
+                                if (
+                                    (includesAi &&
+                                        c.includes('non-alcoholic')) ||
+                                    c.includes('cannot provide')
+                                ) {
+                                    break;
+                                }
+                                if (includesAi) {
+                                    continue;
+                                }
+                                console.log(c);
+                                choicesWithoutAiDisclaimer = [
+                                    ...choicesWithoutAiDisclaimer,
+                                    c,
+                                ];
+                            }
+
+                            setFetchingData(false); //TODO: remove this when you start to make other api calls.
+                        });
+                })
+                .catch((e) => {
+                    console.log(e);
+                    setFetchingData(false);
+                });
+        },
+        [zipCode]
+    );
 
     return (
-        <div className={classes.root}>
+        <div className={styles.root}>
             <Container maxWidth="xs">
                 <Typography variant="h4" align="center" gutterBottom>
                     Find Me a Drink!
@@ -91,41 +101,18 @@ export default function Home() {
                     Enter your zip code to find a drink that fits your local
                     time and weather!
                 </Typography>
-                <form
-                    className={classes.form}
-                    onSubmit={(e) => {
-                        e.preventDefault();
-                        handleClick(e);
-                    }}
-                >
-                    <TextField
-                        onKeyDown={(e) => {
-                            if (e.code == '13') {
-                                e.preventDefault();
-                                handleClick(e);
-                                return;
-                            }
-                        }}
-                        className={classes.textField}
-                        label="Zip Code"
-                        variant="filled"
-                        onChange={(e) => setZipCode(e.currentTarget.value)}
-                        fullWidth
-                    />
-                    <Button
-                        onKeyDown={(e) => {
-                            e.preventDefault();
-                            handleClick(e);
-                        }}
-                        fullWidth
-                        variant="contained"
-                        color="primary"
-                        onClick={handleClick}
-                    >
-                        Find me a Drink!
-                    </Button>
-                </form>
+                <GetDrinkForm
+                    handleClick={handleClick}
+                    setZipCode={setZipCode}
+                />
             </Container>
+            <CircularProgress showProgress={fetchingData} />
+            <Alert
+                message={alert?.message as string}
+                color={alert?.color as AlertColor}
+                open={alert?.open}
+                handleClose={setAlert}
+            />
         </div>
     );
 }

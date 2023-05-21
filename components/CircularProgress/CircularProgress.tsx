@@ -21,7 +21,7 @@ export default function OurCircularProgress(
         >
             <div className={styles.innerWrapper}>
                 <CircularProgress className={styles.spinner} />
-                <p>Hang on! We're getting your options...</p>
+                <p>Hang on! We&#39;re getting your options...</p>
             </div>
         </div>
     );

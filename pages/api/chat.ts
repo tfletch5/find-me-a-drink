@@ -1,35 +1,26 @@
-import type { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
+import axios from 'axios';
+import { NextApiRequest, NextApiResponse } from 'next';
+import { Configuration, OpenAIApi } from 'openai';
 
-export const config = {
-    runtime: 'edge',
-};
+const configuration = new Configuration({
+  apiKey: process.env.OPEN_AI_API_KEY,
+});
+const openai = new OpenAIApi(configuration);
 
-export default async function handler(req: NextRequest) {
-    const phrase = await (req as any).url.split('=').slice(-1)[0];
-    try {
-        const body = {
-            model: 'gpt-3.5-turbo',
-            messages: [{ role: 'user', content: decodeURIComponent(phrase) }],
-        };
-        const res = await fetch('https://api.openai.com/v1/chat/completions', {
-            method: 'POST',
-            body: JSON.stringify(body),
-            headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${process.env.OPEN_AI_API_KEY}`,
-            },
-        })
-            .then((res) => {
-                if (res.ok) {
-                    return res.json();
-                }
-            })
-            .then((data) => data);
-        return NextResponse.json({ res });
-    } catch (e) {
-        console.log(e);
-    }
+export default async (
+  req: NextApiRequest,
+  res: NextApiResponse
+) => {
+  const { phrase } = req.body;
 
-    return NextResponse.error();
+  try {
+    const { data } = await openai.createChatCompletion({
+      model: "gpt-3.5-turbo",
+      messages: [{"role": "system", "content": "You are the best bartender."}, {role: "user", content: phrase}],
+    });
+    return res.json(data);
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({ error: JSON.stringify(e.message) });
+  }
 }

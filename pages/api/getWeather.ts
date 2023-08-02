@@ -1,29 +1,26 @@
-import type { NextRequest } from 'next/server';
-import { NextResponse } from 'next/server';
+import axios from 'axios';
+import { NextApiRequest, NextApiResponse } from 'next';
 
-export const config = {
-    runtime: 'edge',
-};
+export default async (
+  req: NextApiRequest,
+  res: NextApiResponse
+) => {
+  const { zipCode } = req.body;
+  const options = {
+    method: 'GET',
+    url: 'https://weatherapi-com.p.rapidapi.com/current.json',
+    params: { q: zipCode },
+    headers: {
+      'X-RapidAPI-Key': `${process.env.WEATHER_API_KEY}`,
+      'X-RapidAPI-Host': 'weatherapi-com.p.rapidapi.com',
+    },
+  };
 
-export default async function handler(req: NextRequest) {
-    const zipCode = await (req as any).url.split('=').slice(-1)[0];
-    try {
-        const res = await fetch(
-            `http://api.weatherapi.com/v1/current.json?q=${zipCode}&key=${
-                process.env.WEATHER_API_KEY as string
-            }`,
-            { method: 'GET' }
-        )
-            .then((res) => {
-                if (res.ok) {
-                    return res.json();
-                }
-            })
-            .then((data) => data);
-        return NextResponse.json({ res });
-    } catch (e) {
-        console.log(e);
-    }
-
-    return NextResponse.error();
+  try {
+    const response = await axios.request(options);
+    return res.json(response.data);
+  } catch (e) {
+    console.log(e);
+    return res.status(500).json({ error: JSON.stringify(e.message) });
+  }
 }

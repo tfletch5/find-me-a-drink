@@ -103,6 +103,16 @@ a {
     text-decoration: none;
 }
 
+.root {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-image: url("/row-of-shots.jpeg");
+    background-size: cover;
+    background-position: center;
+}
+
 @media (prefers-color-scheme: dark) {
     html {
         color-scheme: dark;
